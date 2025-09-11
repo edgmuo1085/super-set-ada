@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { embedDashboard } from '@superset-ui/embedded-sdk';
 import { ServicesService } from './components/services/services.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ import { ServicesService } from './components/services/services.service';
 })
 export class AppComponent implements OnInit {
   title = 'super-set';
-  enlace: string = 'https://www.catastroantioquia.co/CentroControl/app/6';
+  enlace: string = 'https://catastro.rionegro.gov.co/';
   //enlace: string = 'http://localhost:8088/superset/dashboard/p/2Oq9abDXzVk/';
   urlRedirect: SafeResourceUrl = '';
   private readonly domSanitizer = inject(DomSanitizer);
@@ -20,18 +21,39 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     const urlClean = this.domSanitizer.bypassSecurityTrustResourceUrl(this.enlace);
     this.urlRedirect = urlClean;
-
-    this.login();
+    this.embed();
   }
 
-  login() {
-    this.services.login({ username: 'admin', password: 'admin' }).subscribe({
-      next: response => {
-        console.log(response);
+  async login() {
+    try {
+      return firstValueFrom(this.services.login({ username: 'admin', password: 'admin' }));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  embed() {
+    embedDashboard({
+      id: 'abc123', // given by the Superset embedding UI
+      supersetDomain: 'https://superset.example.com',
+      mountPoint: document.getElementById('my-superset-container') as HTMLDivElement, // any html element that can contain an iframe
+      fetchGuestToken: () => this.login(),
+      dashboardUiConfig: {
+        // dashboard UI config: hideTitle, hideTab, hideChartControls, filters.visible, filters.expanded (optional), urlParams (optional)
+        hideTitle: true,
+        filters: {
+          expanded: true,
+        },
+        urlParams: {
+          foo: 'value1',
+          bar: 'value2',
+          // ...
+        },
       },
-      error: err => {
-        console.error(err);
-      },
+      // optional additional iframe sandbox attributes
+      iframeSandboxExtras: ['allow-top-navigation', 'allow-popups-to-escape-sandbox'],
+      // optional config to enforce a particular referrerPolicy
+      referrerPolicy: 'same-origin',
     });
   }
 }

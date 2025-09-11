@@ -11,7 +11,7 @@ export class ServicesService {
 
   login(body: LoginModel) {
     const url = `${environment.VITE_API_BASE_URL}/login`;
-    return this.http.post<any>('', body, {
+    return this.http.post<any>(url, body, {
       headers: {
         'Content-Type': 'application/json',
       },
