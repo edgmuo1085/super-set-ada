@@ -12,8 +12,8 @@ import { firstValueFrom } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   title = 'super-set';
-  enlace: string = 'https://catastro.rionegro.gov.co/';
-  //enlace: string = 'http://localhost:8088/superset/dashboard/p/2Oq9abDXzVk/';
+  //enlace: string = 'https://catastro.rionegro.gov.co/';
+  enlace: string = 'http://localhost:8088/superset/dashboard/p/2Oq9abDXzVk/';
   urlRedirect: SafeResourceUrl = '';
   private readonly domSanitizer = inject(DomSanitizer);
   private readonly services = inject(ServicesService);
@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     const urlClean = this.domSanitizer.bypassSecurityTrustResourceUrl(this.enlace);
     this.urlRedirect = urlClean;
-    this.embed();
+    //this.embed();
   }
 
   async login() {
