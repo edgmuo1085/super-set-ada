@@ -15,8 +15,8 @@ COPY package*.json ./
 #COPY package.json /app
 
 # Instala las dependencias del proyecto
-RUN npm ci --prefer-offline --no-audit --progress=false
-#RUN npm install
+#RUN npm ci --prefer-offline --no-audit --progress=false
+RUN npm install
 
 # Copia el resto de los archivos de tu proyecto al directorio de trabajo
 COPY . /app
